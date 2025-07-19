@@ -1,6 +1,6 @@
 export type HttpRequest = {
   body: Record<string, any>;
-  queryParameters: Record<string, string>;
+  queryParams: Record<string, any>;
   params: Record<string, any>;
 };
 

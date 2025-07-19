@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
+    "bcryptjs": "^3.0.2",
     "drizzle-orm": "^0.44.3",
     "undici-types": "^7.8.0",
     "zod": "^4.0.5"

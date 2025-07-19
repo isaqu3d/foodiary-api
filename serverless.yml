@@ -5,22 +5,31 @@ service: foodiary-api
 
 provider:
   name: aws
+  region: us-east-1
   runtime: nodejs22.x
   architecture: arm64
-  region: us-east-1
+  environment:
+    DATABASE_URL: ${env:DATABASE_URL}
 
-  package:
-    individually: true
+package:
+  individually: true
 
-  build:
-    esbuild:
+build:
+  esbuild:
     minify: true
     sourcemap: false
 
 functions:
-  hello:
-    handler: handler.hello
+  signin:
+    handler: src/functions/signin.handler
     events:
       - httpApi:
-          path: /
-          method: get
+          path: /signin
+          method: POST
+
+  signup:
+    handler: src/functions/signup.handler
+    events:
+      - httpApi:
+          path: /signup
+          method: POST

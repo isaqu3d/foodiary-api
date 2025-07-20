@@ -1,24 +1,16 @@
-import { eq } from "drizzle-orm";
-import { db } from "../db";
-import { usersTable } from "../db/schema";
-import { HttpResponse, ProtectedHttpRequest } from "../types/Http";
-import { ok } from "../utils/http";
+import { APIGatewayProxyEventV2 } from "aws-lambda";
 
-export class MeController {
-  static async handle({ userId }: ProtectedHttpRequest): Promise<HttpResponse> {
-    const user = await db.query.usersTable.findFirst({
-      columns: {
-        id: true,
-        email: true,
-        name: true,
-        calories: true,
-        proteins: true,
-        carbohydrates: true,
-        fats: true,
-      },
-      where: eq(usersTable.id, userId),
-    });
+import { MeController } from "../controllers/MeController";
+import { unauthorized } from "../utils/http";
+import { parseProtectedEvent } from "../utils/parseProtectedEvent";
+import { parseResponse } from "../utils/parseResponse";
 
-    return ok({ user });
+export async function handler(event: APIGatewayProxyEventV2) {
+  try {
+    const request = parseProtectedEvent(event);
+    const response = await MeController.handle(request);
+    return parseResponse(response);
+  } catch {
+    return parseResponse(unauthorized({ error: "Invalid access token." }));
   }
 }

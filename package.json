@@ -11,6 +11,7 @@
     "bcryptjs": "^3.0.2",
     "drizzle-orm": "^0.44.3",
     "jsonwebtoken": "^9.0.2",
+    "openai": "^5.10.1",
     "undici-types": "^7.8.0",
     "zod": "^4.0.5"
   },

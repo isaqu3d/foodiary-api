@@ -72,9 +72,31 @@ functions:
           method: GET
           path: /meals/{mealId}
 
+  fileUploadedEvent:
+    handler: src/functions/fileUploadedEvent.handler
+    events:
+      - s3:
+          bucket: !Ref UploadsBucket
+          event: s3:ObjectCreated:*
+          existing: true
+          forceDeploy: true
+
 resources:
   Resources:
     UploadsBucket:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: foodiary-api-jstacklab-v1-uploads
+    MealsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: meals-queue
+        VisibilityTimeout: 60
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt MealsDLQ.Arn
+          maxReceiveCount: 1
+    MealsDLQ:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: meals-queue-dlq
+        VisibilityTimeout: 60

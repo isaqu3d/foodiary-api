@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "../db";
 import { usersTable } from "../db/schema";
 import { HttpRequest, HttpResponse } from "../types/Http";
-import { badRequest, created, unauthorized } from "../utils/http";
+import { badRequest, ok, unauthorized } from "../utils/http";
 
 const schema = z.object({
   email: z.email(),
@@ -37,7 +37,7 @@ export class SignInController {
       return unauthorized({ error: "Invalid credentials." });
     }
 
-    return created({
+    return ok({
       user,
     });
   }

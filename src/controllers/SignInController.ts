@@ -1,6 +1,7 @@
 import { compare } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+
 import { db } from "../db";
 import { usersTable } from "../db/schema";
 import { signAccessTokenFor } from "../lib/jwt";
@@ -34,14 +35,13 @@ export class SignInController {
     }
 
     const isPasswordValid = await compare(data.password, user.password);
+
     if (!isPasswordValid) {
       return unauthorized({ error: "Invalid credentials." });
     }
 
     const accessToken = signAccessTokenFor(user.id);
 
-    return ok({
-      accessToken,
-    });
+    return ok({ accessToken });
   }
 }

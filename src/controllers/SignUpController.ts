@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import z from "zod";
 import { db } from "../db";
 import { usersTable } from "../db/schema";
+
 import { calculateGoals } from "../lib/calculateGoal";
 import { signAccessTokenFor } from "../lib/jwt";
 import { HttpRequest, HttpResponse } from "../types/Http";
@@ -15,7 +16,6 @@ const schema = z.object({
   height: z.number(),
   weight: z.number(),
   activityLevel: z.number().min(1).max(5),
-
   account: z.object({
     name: z.string().min(1),
     email: z.email(),
@@ -25,7 +25,7 @@ const schema = z.object({
 
 export class SignUpController {
   static async handle({ body }: HttpRequest): Promise<HttpResponse> {
-    const { success, data, error } = schema.safeParse(body);
+    const { success, error, data } = schema.safeParse(body);
 
     if (!success) {
       return badRequest({ errors: error.issues });
@@ -43,7 +43,6 @@ export class SignUpController {
     }
 
     const { account, ...rest } = data;
-
     const goals = calculateGoals({
       activityLevel: rest.activityLevel,
       birthDate: new Date(rest.birthDate),
@@ -58,8 +57,8 @@ export class SignUpController {
     const [user] = await db
       .insert(usersTable)
       .values({
-        ...data,
-        ...data.account,
+        ...account,
+        ...rest,
         ...goals,
         password: hashedPassword,
       })
@@ -69,8 +68,6 @@ export class SignUpController {
 
     const accessToken = signAccessTokenFor(user.id);
 
-    return created({
-      accessToken,
-    });
+    return created({ accessToken });
   }
 }

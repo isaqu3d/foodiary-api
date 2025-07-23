@@ -112,4 +112,3 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: meals-queue-dlq
-        VisibilityTimeout: 60
